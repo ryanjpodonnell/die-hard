@@ -1,0 +1,99 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8" />
+  <title>DIE HARD</title>
+	<script type="text/javascript" src="js/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script src="player.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+var player;
+var platforms;
+var cursors;
+var stars;
+var score = 0;
+var scoreText;
+var fireButton;
+
+function preload() {
+  game.load.image('sky', 'assets/sky.png');
+  game.load.image('ground', 'assets/platform.png');
+  game.load.image('star', 'assets/star.png');
+  game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+}
+
+function create() {
+  game.world.setBounds(0, 0, 800, 600*3);
+  game.physics.startSystem(Phaser.Physics.ARCADE);
+
+  sky = game.add.sprite(0, 0, 'sky');
+  sky.scale.setTo(1, 3);
+
+  player = new Player(game);
+  player.create();
+
+  platforms = game.add.group();
+  platforms.enableBody = true;
+
+  var ground = platforms.create(0, game.world.height - 64, 'ground');
+  ground.scale.setTo(2, 2);
+  ground.body.immovable = true;
+
+  var ledge = platforms.create(400, 400, 'ground');
+  ledge.body.immovable = true;
+
+  ledge = platforms.create(-150, 250, 'ground');
+  ledge.body.immovable = true;
+
+  stars = game.add.group();
+  stars.enableBody = true;
+  for (var i = 0; i < 12; i++) {
+    var star = stars.create(i * 70, 0, 'star');
+    star.body.gravity.y = 300;
+    star.body.bounce.y = 0.7 + Math.random() * 0.2;
+  }
+
+  scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+  scoreText.fixedToCamera = true;
+
+  cursors = game.input.keyboard.createCursorKeys();
+
+  //  fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+}
+
+function update() {
+  game.physics.arcade.collide(player.sprite, platforms);
+  game.physics.arcade.collide(stars, platforms);
+
+  player.update(cursors);
+
+  game.physics.arcade.overlap(
+    player.sprite,
+    stars,
+    collectStar,
+    null,
+    this
+  );
+}
+
+function collectStar (player, star) {
+  star.kill();
+
+  score += 10;
+  scoreText.text = 'score: ' + score;
+}
+
+</script>
+
+</body>
+</html>

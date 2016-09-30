@@ -9,7 +9,7 @@ function Player(game) {
 Player.prototype.create = function() {
   this.sprite.body.bounce.y = 0.2;
   this.sprite.body.gravity.y = 300;
-  this.sprite.collideWorldBounds = true;
+  this.sprite.body.collideWorldBounds = true;
 
   this.sprite.animations.add('left', [0, 1, 2, 3], 10, true);
   this.sprite.animations.add('right', [5, 6, 7, 8], 10, true);
